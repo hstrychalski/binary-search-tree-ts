@@ -34,6 +34,13 @@ export class Tree {
         } while (1)
     }
 
+    /**
+     * Delete node with given value from tree/subtree
+     * Start with a root node if no INode instance provided
+     *
+     * @param value
+     * @param currentNode
+     */
     delete(value: number, currentNode: INode|null): void {
         if (currentNode === null) {
             currentNode = this._rootNode;
@@ -93,21 +100,21 @@ export class Tree {
     private linkSubtreeToParent(node: INode, parent: INode): void {
         if (node.LeftChild) { //left subtree
             // @ts-ignore
-            if (parent.Value > currentNode.Value) { //current is left child of parent
+            if (parent.Value > node.Value) { //current is left child of parent
                 // @ts-ignore
-                parent.LeftChild = currentNode.LeftChild; //link subtree to parent
+                parent.LeftChild = node.LeftChild; //link subtree to parent
             } else { //current is right child of parent
                 // @ts-ignore
-                parent.RightChild = currentNode.LeftChild;
+                parent.RightChild = node.LeftChild;
             }
         } else if (node.RightChild){
             // @ts-ignore
-            if (parent.Value > currentNode.Value) { //current is left child of parent
+            if (parent.Value > node.Value) { //current is left child of parent
                 // @ts-ignore
-                parent.LeftChild = currentNode.RightChild; //link subtree to parent
+                parent.LeftChild = node.RightChild; //link subtree to parent
             } else { //current is right child of parent
                 // @ts-ignore
-                parent.RightChild = currentNode.RightChild;
+                parent.RightChild = node.RightChild;
             }
         }
     }
