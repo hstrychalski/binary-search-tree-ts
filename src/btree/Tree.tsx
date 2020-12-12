@@ -93,7 +93,9 @@ export class Tree {
                 // @ts-ignore
                 parent.RightChild = successor;
             }
-            this.delete(successor.Value, currentNode.RightChild);
+            successor.LeftChild = currentNode.LeftChild;
+            successor.RightChild = currentNode.RightChild;
+            this.delete(successor.Value, currentNode);
         }
     }
 
