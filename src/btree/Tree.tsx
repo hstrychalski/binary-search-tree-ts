@@ -34,8 +34,14 @@ export class Tree {
         } while (1)
     }
 
-    delete(value: number): void {
-        let currentNode = this._rootNode;
+    delete(value: number, currentNode: INode|null): void {
+        if (currentNode === null) {
+            currentNode = this._rootNode;
+        }
+        this.performDeletionFromTree(value, currentNode);
+    }
+
+    private performDeletionFromTree(value: number, currentNode: INode): void {
         let parent = null;
         while (currentNode.Value !== value) {
             if (value < currentNode.Value) {
@@ -68,6 +74,19 @@ export class Tree {
         ) { //one subtree - left or right
             // @ts-ignore
             this.linkSubtreeToParent(currentNode, parent);
+        }
+
+        if (currentNode.LeftChild && currentNode.RightChild) {
+            let successor = this.findMinimumValueNodeInTree(currentNode.RightChild);
+            // @ts-ignore
+            if (parent.Value > currentNode.Value) { //left child
+                // @ts-ignore
+                parent.LeftChild = successor;
+            } else { //right child
+                // @ts-ignore
+                parent.RightChild = successor;
+            }
+            this.delete(successor.Value, currentNode.RightChild);
         }
     }
 
