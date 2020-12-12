@@ -85,17 +85,13 @@ export class Tree {
 
         if (currentNode.LeftChild && currentNode.RightChild) {
             let successor = this.findMinimumValueNodeInTree(currentNode.RightChild);
-            // @ts-ignore
-            if (parent.Value > currentNode.Value) { //left child
-                // @ts-ignore
-                parent.LeftChild = successor;
-            } else { //right child
-                // @ts-ignore
-                parent.RightChild = successor;
+            currentNode.Value = successor.Value;
+
+            if (currentNode.RightChild === successor) { //special case when right subtree is just one node
+                currentNode.RightChild = null; //unlink successor
+                return;
             }
-            successor.LeftChild = currentNode.LeftChild;
-            successor.RightChild = currentNode.RightChild;
-            this.delete(successor.Value, currentNode);
+            this.delete(successor.Value, currentNode.RightChild);
         }
     }
 

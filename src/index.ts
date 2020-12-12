@@ -18,6 +18,3 @@ tree.insert(22);
 
 tree.delete(23, null);
 
-
-let a =3 ;
-console.log(a)
