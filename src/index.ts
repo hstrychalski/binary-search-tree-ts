@@ -16,5 +16,4 @@ tree.insert(26);
 tree.insert(21);
 tree.insert(22);
 
-tree.delete(23, null);
-
+console.log(tree.preOrderTraversal(rootNode));

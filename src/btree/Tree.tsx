@@ -82,6 +82,30 @@ export class Tree {
         return this.findMinimumValueNodeInTree(node.LeftChild);
     }
 
+    preOrderTraversal(rootNode: RootNode): INode[] {
+        return this.preOrderTraversalRecursive(rootNode, [], []);
+    }
+
+    private preOrderTraversalRecursive(node: INode, stack: INode[], visitedNodes: INode[]): INode[] {
+        while (node) { //visit left subtree first
+            visitedNodes.push(node);
+            if (node.RightChild) {
+                stack.push(node);
+            }
+            //@ts-ignore
+            node = node.LeftChild;
+        }
+
+        if (stack.length === 0) {
+            return visitedNodes;
+        }
+
+        let poppedNode = stack.pop();
+
+        //@ts-ignore
+        return this.preOrderTraversalRecursive(poppedNode.RightChild, stack, visitedNodes);
+    }
+
     private linkSubtreeToParent(node: INode, parent: INode): void {
         if (node.LeftChild) { //left subtree
             // @ts-ignore
