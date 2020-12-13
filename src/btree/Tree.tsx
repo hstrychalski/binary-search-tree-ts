@@ -34,6 +34,26 @@ export class Tree {
         } while (1)
     }
 
+    search(value: number): INode|null {
+        let currentNode = this._rootNode;
+        while (currentNode.Value !== value) {
+            if (value < currentNode.Value) {
+                // @ts-ignore
+                currentNode = currentNode.LeftChild;
+            } else {
+                // @ts-ignore
+                currentNode = currentNode.RightChild;
+            }
+
+            if (currentNode.Value !== value &&
+                currentNode.LeftChild === null && currentNode.RightChild === null
+            ) {
+                return null;
+            }
+        }
+        return currentNode;
+    }
+
     /**
      * Delete node with given value from tree/subtree
      * Start with a root node if no INode instance provided
@@ -48,51 +68,18 @@ export class Tree {
         this.performDeletionFromTree(value, currentNode);
     }
 
-    private performDeletionFromTree(value: number, currentNode: INode): void {
-        let parent = null;
-        while (currentNode.Value !== value) {
-            if (value < currentNode.Value) {
-                parent = currentNode;
-                // @ts-ignore
-                currentNode = currentNode.LeftChild;
-            } else {
-                parent = currentNode;
-                // @ts-ignore
-                currentNode = currentNode.RightChild;
-            }
-
-            if (currentNode.Value !== value &&
-                currentNode.LeftChild === null && currentNode.RightChild === null
-            ) {
-                throw new Error('Node with value: ' + value + ' not found');
-            }
+    findInOrderSuccessor(node: INode): INode {
+        if (!node.RightChild) {
+            throw new Error('Right node link is empty');
         }
+        return this.findMinimumValueNodeInTree(node.RightChild);
+    }
 
-        //TODO handle root node removal
-
-        if (!currentNode.LeftChild && !currentNode.RightChild) { //no subtrees - simple deletion
-            // @ts-ignore
-            this.simpleDeletion(currentNode, parent);
-            return;
+    findMinimumValueNodeInTree(node: INode): INode {
+        if (node.LeftChild === null) {
+            return node;
         }
-
-        if (( currentNode.LeftChild || currentNode.RightChild ) &&
-            !( currentNode.LeftChild && currentNode.RightChild)
-        ) { //one subtree - left or right
-            // @ts-ignore
-            this.linkSubtreeToParent(currentNode, parent);
-        }
-
-        if (currentNode.LeftChild && currentNode.RightChild) {
-            let successor = this.findMinimumValueNodeInTree(currentNode.RightChild);
-            currentNode.Value = successor.Value;
-
-            if (currentNode.RightChild === successor) { //special case when right subtree is just one node
-                currentNode.RightChild = null; //unlink successor
-                return;
-            }
-            this.delete(successor.Value, currentNode.RightChild);
-        }
+        return this.findMinimumValueNodeInTree(node.LeftChild);
     }
 
     private linkSubtreeToParent(node: INode, parent: INode): void {
@@ -117,22 +104,15 @@ export class Tree {
         }
     }
 
-    private simpleDeletion(node: INode, parent: INode): void {
-        if (parent.Value > node.Value) { //left child
-            parent.LeftChild = null;
-        } else { //right child
-            parent.RightChild = null;
-        }
-    }
-
-
-    search(value: number): INode|null {
-        let currentNode = this._rootNode;
+    private performDeletionFromTree(value: number, currentNode: INode): void {
+        let parent = null;
         while (currentNode.Value !== value) {
             if (value < currentNode.Value) {
+                parent = currentNode;
                 // @ts-ignore
                 currentNode = currentNode.LeftChild;
             } else {
+                parent = currentNode;
                 // @ts-ignore
                 currentNode = currentNode.RightChild;
             }
@@ -140,16 +120,40 @@ export class Tree {
             if (currentNode.Value !== value &&
                 currentNode.LeftChild === null && currentNode.RightChild === null
             ) {
-                return null;
+                throw new Error('Node with value: ' + value + ' not found');
             }
         }
-        return currentNode;
+
+        if (!currentNode.LeftChild && !currentNode.RightChild) { //no subtrees - simple deletion
+            // @ts-ignore
+            this.simpleDeletion(currentNode, parent);
+            return;
+        }
+
+        if (( currentNode.LeftChild || currentNode.RightChild ) &&
+            !( currentNode.LeftChild && currentNode.RightChild)
+        ) { //one subtree - left or right
+            // @ts-ignore
+            this.linkSubtreeToParent(currentNode, parent);
+        }
+
+        if (currentNode.LeftChild && currentNode.RightChild) {
+            let successor = this.findInOrderSuccessor(currentNode);
+            currentNode.Value = successor.Value;
+
+            if (currentNode.RightChild === successor) { //special case when right subtree is just one node
+                currentNode.RightChild = null; //unlink successor
+                return;
+            }
+            this.delete(successor.Value, currentNode.RightChild);
+        }
     }
 
-    findMinimumValueNodeInTree(node: INode): INode {
-        if (node.LeftChild === null) {
-            return node;
+    private simpleDeletion(node: INode, parent: INode): void {
+        if (parent.Value > node.Value) { //left child
+            parent.LeftChild = null;
+        } else { //right child
+            parent.RightChild = null;
         }
-        return this.findMinimumValueNodeInTree(node.LeftChild);
     }
 }
