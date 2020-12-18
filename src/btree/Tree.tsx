@@ -68,13 +68,6 @@ export class Tree {
         this.performDeletionFromTree(value, currentNode);
     }
 
-    findInOrderSuccessor(node: INode): INode {
-        if (!node.RightChild) {
-            throw new Error('Right node link is empty');
-        }
-        return this.findMinimumValueNodeInTree(node.RightChild);
-    }
-
     findMinimumValueNodeInTree(node: INode): INode {
         if (node.LeftChild === null) {
             return node;
@@ -162,7 +155,7 @@ export class Tree {
         }
 
         if (currentNode.LeftChild && currentNode.RightChild) {
-            let successor = this.findInOrderSuccessor(currentNode);
+            let successor = this.findSuccessor(currentNode);
             currentNode.Value = successor.Value;
 
             if (currentNode.RightChild === successor) { //special case when right subtree is just one node
@@ -171,6 +164,13 @@ export class Tree {
             }
             this.delete(successor.Value, currentNode.RightChild);
         }
+    }
+
+    private findSuccessor(node: INode): INode {
+        if (!node.RightChild) {
+            throw new Error('Right node link is empty');
+        }
+        return this.findMinimumValueNodeInTree(node.RightChild);
     }
 
     private simpleDeletion(node: INode, parent: INode): void {

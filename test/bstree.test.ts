@@ -145,16 +145,72 @@ describe('Tree search returns proper result', () => {
     });
 });
 
-describe('findInorderSuccessor returns proper in order successorNode', () => {
-    let tree = createTree(
-        200,
-        [300, 100, 20, 90, 46, 115, 30, 3, 400, 220],
-    );
-    let node = tree.search(3);
-    let expectedSuccessor = tree.search(20);
-    //@ts-ignore
-    let result = tree.findInOrderSuccessor(node);
-    expect(result).toEqual(expectedSuccessor);
+describe('Function delete', () => {
+    it('Removes properly leaf node', () => {
+        let tree = createTree(
+            200,
+            [300, 100, 20, 90, 46, 115, 30, 3, 400, 220],
+        );
+
+        let deletedNodeParent = tree.search(100);
+        tree.delete(115, null);
+        //@ts-ignore
+        expect(deletedNodeParent.RightChild).toBeNull();
+    });
+
+    it('Removes properly node with one child', () => {
+        let tree = createTree(
+            200,
+            [300, 100, 20, 90, 46, 115, 30, 3, 400, 220],
+        );
+
+        let deletedNodeParent = tree.search(90);
+        let deletedNodeChild = tree.search(30);
+        tree.delete(46, null);
+        //@ts-ignore
+        expect(deletedNodeParent.RightChild).toBeNull();
+        //@ts-ignore
+        expect(deletedNodeParent.LeftChild).toBe(deletedNodeChild);
+    });
+
+    it('Removes properly node with both children', () => {
+        let tree = createTree(
+            200,
+            [300, 100, 20, 90, 46, 115, 30, 3, 400, 220],
+        );
+        tree.delete(20, null);
+
+        let deletedNodeParent = tree.search(100);
+        let expectedNodeReplacement = tree.search(30);
+        let expectedNodeReplacementParent = tree.search(46);
+        //@ts-ignore
+        expect(deletedNodeParent.LeftChild).toBeInstanceOf(Node)
+        //@ts-ignore
+        expect(deletedNodeParent.LeftChild.Value).toEqual(30);
+        //@ts-ignore
+        expect(expectedNodeReplacementParent.LeftChild).toBeNull();
+        //@ts-ignore
+        expect(expectedNodeReplacement.LeftChild).toBeInstanceOf(Node);
+        //@ts-ignore
+        expect(expectedNodeReplacement.LeftChild.Value).toEqual(3);
+    });
+});
+
+describe('Preorder traversal', () => {
+    it('Visits nodes in correct order', () => {
+        let nodes = [300, 100, 20, 90, 46, 115, 30, 3, 400, 220];
+        let root = new RootNode(200, null, null);
+        let tree = new BSTree(root);
+        insertNodes(tree, nodes)
+
+        let visitedNodes = tree.preOrderTraversal(root);
+        let actualValuesInVisitedOrder: number[] = [];
+        visitedNodes.forEach((node) => {
+            actualValuesInVisitedOrder.push(node.Value);
+        });
+
+        expect(actualValuesInVisitedOrder).toEqual([200, 100, 20, 3, 90, 46, 30, 115, 300, 220, 400]);
+    });
 });
 
 function createTree(rootValue: number, values: number[]) {
@@ -164,4 +220,10 @@ function createTree(rootValue: number, values: number[]) {
         tree.insert(value);
     });
     return tree;
+}
+
+function insertNodes(tree: BSTree, values: number[]) {
+    values.forEach((value => {
+        tree.insert(value);
+    }));
 }
